@@ -1,0 +1,10 @@
+Token: 2
+Token: +
+Token: 9
+Token: +
+Token: 6
+Token: -
+Token: 8
+Token: +
+Token: 23
+Token: null

@@ -8,23 +8,125 @@ package com.compiladores;
 /** CUP generated interface containing symbol constants. */
 public interface ParserSym {
   /* terminals */
-  public static final int RPAREN = 6;
-  public static final int error = 1;
-  public static final int PLUS = 2;
-  public static final int NUMBER = 7;
-  public static final int MINUS = 4;
+  public static final int ENDCOMMENT = 43;
+  public static final int DIVIDE = 7;
+  public static final int CHAR = 57;
+  public static final int EQUALS = 11;
+  public static final int CASE = 34;
+  public static final int INTEGER = 55;
   public static final int LPAREN = 5;
-  public static final int TIMES = 3;
+  public static final int GREATER = 13;
+  public static final int PRINTSYMBOL = 40;
+  public static final int LESS = 14;
+  public static final int FOR = 29;
+  public static final int MINUS = 3;
+  public static final int RPAREN = 6;
+  public static final int NOT = 19;
+  public static final int AND = 17;
+  public static final int RANGE = 31;
+  public static final int VOIDTYPE = 50;
+  public static final int LESSEQUAL = 16;
+  public static final int IN = 30;
+  public static final int OR = 18;
+  public static final int COMMA = 22;
+  public static final int ENDLINE = 10;
+  public static final int SEPARATOR = 23;
+  public static final int DIFFERENT = 12;
+  public static final int BLOCKEND = 21;
+  public static final int PLUS = 2;
+  public static final int ASSIGN = 9;
+  public static final int IF = 24;
+  public static final int DOTS = 35;
+  public static final int BOOLEAN = 51;
   public static final int EOF = 0;
+  public static final int RETURN = 27;
+  public static final int TRUE = 52;
+  public static final int error = 1;
+  public static final int STARTCOMMENT = 42;
+  public static final int READSYMBOL = 38;
+  public static final int BOOLEANTYPE = 47;
+  public static final int BREAK = 28;
+  public static final int VOID = 54;
+  public static final int SWITCH = 33;
+  public static final int GREATEREQUAL = 15;
+  public static final int MODULE = 8;
+  public static final int TIMES = 4;
+  public static final int ELSE = 25;
+  public static final int BLOCKSTART = 20;
+  public static final int READ = 37;
+  public static final int WHILE = 32;
+  public static final int STRINGTYPE = 49;
+  public static final int LINEALCOMMENT = 41;
+  public static final int DEFAULT = 36;
+  public static final int FLOAT = 56;
+  public static final int STRING = 58;
+  public static final int FLOATTYPE = 46;
+  public static final int CHARTYPE = 48;
+  public static final int TEXT = 44;
+  public static final int FALSE = 53;
+  public static final int INTEGERTYPE = 45;
+  public static final int PRINT = 39;
+  public static final int IDENTIFIER = 26;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
   "PLUS",
-  "TIMES",
   "MINUS",
+  "TIMES",
   "LPAREN",
   "RPAREN",
-  "NUMBER"
+  "DIVIDE",
+  "MODULE",
+  "ASSIGN",
+  "ENDLINE",
+  "EQUALS",
+  "DIFFERENT",
+  "GREATER",
+  "LESS",
+  "GREATEREQUAL",
+  "LESSEQUAL",
+  "AND",
+  "OR",
+  "NOT",
+  "BLOCKSTART",
+  "BLOCKEND",
+  "COMMA",
+  "SEPARATOR",
+  "IF",
+  "ELSE",
+  "IDENTIFIER",
+  "RETURN",
+  "BREAK",
+  "FOR",
+  "IN",
+  "RANGE",
+  "WHILE",
+  "SWITCH",
+  "CASE",
+  "DOTS",
+  "DEFAULT",
+  "READ",
+  "READSYMBOL",
+  "PRINT",
+  "PRINTSYMBOL",
+  "LINEALCOMMENT",
+  "STARTCOMMENT",
+  "ENDCOMMENT",
+  "TEXT",
+  "INTEGERTYPE",
+  "FLOATTYPE",
+  "BOOLEANTYPE",
+  "CHARTYPE",
+  "STRINGTYPE",
+  "VOIDTYPE",
+  "BOOLEAN",
+  "TRUE",
+  "FALSE",
+  "VOID",
+  "INTEGER",
+  "FLOAT",
+  "CHAR",
+  "STRING"
   };
 }
 

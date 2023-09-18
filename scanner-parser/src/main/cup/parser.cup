@@ -6,22 +6,46 @@ class Parser;
 
 /** TERMINALES **/
 
-terminal PLUS, TIMES, MINUS, LPAREN, RPAREN;
-terminal Integer NUMBER;
+terminal PLUS, MINUS, TIMES, LPAREN, RPAREN, DIVIDE, MODULE, ASSIGN, ENDLINE, EQUALS, DIFFERENT, GREATER,
+ LESS, GREATEREQUAL, LESSEQUAL, AND, OR, NOT, BLOCKSTART, BLOCKEND, COMMA, SEPARATOR, IF, ELSE, IDENTIFIER,
+ RETURN, BREAK, FOR, IN, RANGE, WHILE, SWITCH, CASE, DOTS, DEFAULT, READ, READSYMBOL, PRINT, PRINTSYMBOL,
+ LINEALCOMMENT, STARTCOMMENT, ENDCOMMENT, TEXT, INTEGERTYPE, FLOATTYPE, BOOLEANTYPE, CHARTYPE, STRINGTYPE,
+ VOIDTYPE, BOOLEAN, TRUE, FALSE, VOID;
+
+
+terminal Interger INTEGER;
+terminal Float FLOAT;
+terminal Character CHAR;
+terminal String STRING;
+
 
 /** NO TERMINALES **/
+non terminal type;
+non terminal Object function, functions, program, parameter, parameters, sendParameter, sendParameters;
 
-non terminal Integer expr;
-
-//expr ::= expr PLUS term | expr TIMES term | term;
 
 //PRECEDENCIA
 precedence left PLUS;
 precedence left TIMES;
 
-start with expr;
+start with program;
 
-expr ::= expr:e1 PLUS expr:e2   {:RESULT = e1 +e2; :}
-        | expr:e1 TIMES expr:e2 {:RESULT = e1 * e2; :}
-        | LPAREN expr:e RPAREN  {:RESULT = e; :}
-        | NUMBER:n              {:RESULT = n; :};
+
+type ::= INTEGERTYPE | FLOATTYPE | BOOLEANTYPE | CHARTYPE | STRINGTYPE | VOIDTYPE;
+
+//parameter::= type SEPARATOR IDENTIFIER;
+//parameters ::= type SEPARATOR IDENTIFIER;
+//parameters ::= parameters COMMA parameter;
+//parameters ::= parameter;
+
+sendParameter ::= IDENTIFIER | INTEGER | FLOAT | CHAR | STRING | TRUE | FALSE;
+sendParameters ::= sendParameter;
+sendParameters ::= sendParameters COMMA sendParameter;
+
+function ::= type SEPARATOR IDENTIFIER LPAREN sendParameters RPAREN BLOCKSTART BLOCKEND;
+
+functions ::= functions function;
+functions ::= function;
+
+program ::= functions;
+
