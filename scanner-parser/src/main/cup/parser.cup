@@ -63,7 +63,7 @@ logicalExpressions ::= logicalExpressions logicalOp logicalExpression;
 logicalExpressions ::= LPAREN logicalExpressions RPAREN;
 logicalExpressions ::= NOT logicalExpressions;
 
-expression ::= aritmeticExpressions | relationalExpression | logicalExpressions;
+expression ::= aritmeticExpressions | logicalExpressions;
 expressions ::= expression;
 expressions ::= expressions logicalOp expression;
 expressions ::= LPAREN expressions RPAREN;
@@ -73,9 +73,9 @@ expressions ::= LPAREN expressions RPAREN;
 
 decl ::= type SEPARATOR IDENTIFIER ENDLINE;
 
-assignment ::= IDENTIFIER ASSIGN literal | IDENTIFIER | expressions ENDLINE;
+assignment ::= IDENTIFIER ASSIGN expressions ENDLINE;
 
-decl_and_assignment ::= type SEPARATOR IDENTIFIER ASSIGN literal | IDENTIFIER | expressions  ENDLINE;
+decl_and_assignment ::= type SEPARATOR IDENTIFIER ASSIGN  expressions  ENDLINE;
 
 readData ::= READ SEPARATOR READSYMBOL IDENTIFIER ENDLINE;
 
@@ -102,7 +102,7 @@ for_range_struct ::= FOR SEPARATOR IDENTIFIER SEPARATOR IN SEPARATOR RANGE LPARE
              
 
 statement ::=   decl | assignment | decl_and_assignment | readData | printData |
-                callFunction | if_struct | while_struct | for_range_struct;
+                callFunction | if_struct | if_else_struct| while_struct | while_else_struct | for_range_struct;
 
 statements ::= statement;
 statements ::= statements statement;
