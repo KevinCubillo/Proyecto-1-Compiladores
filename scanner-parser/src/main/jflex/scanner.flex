@@ -37,11 +37,11 @@ Identifier = {letter}({letter}|[0-9])*
 "+" { return symbol(ParserSym.PLUS, yytext()); }
 "-" { return symbol(ParserSym.MINUS, yytext()); }
 "*" { return symbol(ParserSym.TIMES, yytext()); }
-"(" { return symbol(ParserSym.LPAREN, yytext()); }
-")" { return symbol(ParserSym.RPAREN, yytext()); }
 "/" { return symbol(ParserSym.DIVIDE, yytext()); }
 "%" { return symbol(ParserSym.MODULE, yytext()); }
 "^" { return symbol(ParserSym.POWER, yytext()); }
+"(" { return symbol(ParserSym.LPAREN, yytext()); }
+")" { return symbol(ParserSym.RPAREN, yytext()); }
 "++" { return symbol(ParserSym.INCREMENT, yytext()); }
 "--" { return symbol(ParserSym.DECREMENT, yytext()); }
 "=" { return symbol(ParserSym.ASSIGN, yytext()); }

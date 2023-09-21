@@ -24,7 +24,7 @@ non terminal type;
 
 non terminal Object function, functions, program, parameter, parameters, sendParameter, sendParameters, expression, 
                     expressions, statement, statements, if_struct, if_else_struct, while_struct,while_else_struct, for_range_struct, decl, assignment,
-                    decl_and_assignment, readData, printData, callFunction, case_struct, default_struct, switch_struct,
+                    decl_and_assignment, readData, printData, callFunction, case_statement, case_statements, default_statement, switch_struct,
                     aritmeticExpression, aritmeticExpressions, relationalExpression, logicalExpression, logicalExpressions,
                     literal, aritmeticOp, relationalOp, logicalOp;
 
@@ -44,15 +44,15 @@ logicalOp ::= AND | OR;
 /** EXPRESSIONS **/
 
 aritmeticExpression ::= literal | IDENTIFIER | callFunction;
-aritmeticExpression ::= literal | IDENTIFIER | callFunction aritmeticOp literal | IDENTIFIER | callFunction;
+aritmeticExpression ::= aritmeticExpression aritmeticOp aritmeticExpression;
 aritmeticExpression ::= IDENTIFIER  INCREMENT | DECREMENT;
 aritmeticExpressions ::= aritmeticExpression;
 aritmeticExpressions ::= aritmeticExpressions aritmeticOp aritmeticExpression;
 aritmeticExpressions ::= LPAREN aritmeticExpressions RPAREN;
-aritmeticExpressions ::= MINUS aritmeticExpression;
+aritmeticExpressions ::= MINUS aritmeticExpressions;
 
 relationalExpression ::= literal | IDENTIFIER | callFunction;
-relationalExpression ::= literal | IDENTIFIER | callFunction relationalOp literal | IDENTIFIER | callFunction;
+relationalExpression ::= relationalExpression relationalOp relationalExpression;
 relationalExpression ::= LPAREN relationalExpression RPAREN;
 relationalExpression ::= NOT relationalExpression;
 
@@ -99,10 +99,18 @@ for_range_struct ::= FOR SEPARATOR IDENTIFIER SEPARATOR IN SEPARATOR RANGE LPARE
 
 for_range_struct ::= FOR SEPARATOR IDENTIFIER SEPARATOR IN SEPARATOR RANGE LPAREN INTEGER RPAREN BLOCKSTART statements BLOCKEND;
 
-             
+
+case_statement ::= CASE literal DOTS statements;
+
+case_statements ::= case_statement | case_statements case_statement;
+
+default_statement ::= DEFAULT DOTS statements;
+
+switch_struct ::= SWITCH LPAREN statements | IDENTIFIER| literal RPAREN BLOCKSTART case_statements default_statement BLOCKEND;
+
 
 statement ::=   decl | assignment | decl_and_assignment | readData | printData |
-                callFunction | if_struct | if_else_struct| while_struct | while_else_struct | for_range_struct;
+                callFunction | if_struct | if_else_struct| while_struct | while_else_struct | for_range_struct | switch_struct;
 
 statements ::= statement;
 statements ::= statements statement;

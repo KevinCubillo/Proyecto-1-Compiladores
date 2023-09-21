@@ -7,6 +7,11 @@
     <list default="true" id="d7af08d1-e724-4b2a-92b5-4c63bf52ddc3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/cup/parser.cup" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/cup/parser.cup" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/jflex/scanner.flex" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/jflex/scanner.flex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/compiladores/App.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/cup/com/compiladores/Parser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/cup/com/compiladores/ParserSym.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/compiladores/AppTest.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,7 +58,7 @@
       <updated>1695328656125</updated>
       <workItem from="1695328656716" duration="179000" />
       <workItem from="1695329233012" duration="33000" />
-      <workItem from="1695329279928" duration="1726000" />
+      <workItem from="1695329279928" duration="4199000" />
     </task>
     <servers />
   </component>
