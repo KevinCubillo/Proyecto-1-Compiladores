@@ -14,20 +14,21 @@ public class ParserTest {
     @Test
     public void TestLexer() throws Exception {
 
-        String expresion = "int#Getedad(vaso){}string#getNombre(2.5){}";
-        Lexer lexer = new Lexer(new StringReader(expresion));
+        //String expresion = "int#Getedad(vaso){}string#getNombre(2.5){}";
+        //Lexer lexer = new Lexer(new StringReader(expresion));
 
-        //Lexer lexer = new Lexer((new FileReader("src/test/java/com/compiladores/test.txt")));
-        //FileWriter fw = new FileWriter("src/test/java/com/compiladores/tokens.txt", true);
+        Lexer lexer = new Lexer((new FileReader("src/test/java/com/compiladores/test.txt")));
+        FileWriter fw = new FileWriter("src/test/java/com/compiladores/tokens.txt", true);
 
         Symbol s;
         do {
             s = lexer.next_token();
             System.out.println("Token: " + s.value);
+            fw.write("Token: " + s.value + "\n");
 
         } while (s.sym != ParserSym.EOF);
-       // fw.flush();
-        //fw.close();
+        fw.flush();
+        fw.close();
     }
 
     @Test

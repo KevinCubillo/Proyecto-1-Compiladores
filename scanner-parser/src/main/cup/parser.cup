@@ -6,11 +6,11 @@ class Parser;
 
 /** TERMINALES **/
 
-terminal PLUS, MINUS, TIMES, LPAREN, RPAREN, DIVIDE, MODULE, ASSIGN, ENDLINE, EQUALS, DIFFERENT, GREATER,
+terminal PLUS, MINUS, TIMES, LPAREN, RPAREN, DIVIDE, MODULE, POWER, INCREMENT, DECREMENT, ASSIGN, ENDLINE, EQUALS, DIFFERENT, GREATER,
  LESS, GREATEREQUAL, LESSEQUAL, AND, OR, NOT, BLOCKSTART, BLOCKEND, COMMA, SEPARATOR, IF, ELSE, IDENTIFIER,
  RETURN, BREAK, FOR, IN, RANGE, WHILE, SWITCH, CASE, DOTS, DEFAULT, READ, READSYMBOL, PRINT, PRINTSYMBOL,
  LINEALCOMMENT, STARTCOMMENT, ENDCOMMENT, TEXT, INTEGERTYPE, FLOATTYPE, BOOLEANTYPE, CHARTYPE, STRINGTYPE,
- VOIDTYPE, BOOLEAN, TRUE, FALSE, VOID;
+ VOIDTYPE, BOOLEAN,VOID;
 
 
 terminal Interger INTEGER;
@@ -21,8 +21,12 @@ terminal String STRING;
 
 /** NO TERMINALES **/
 non terminal type;
-non terminal Object function, functions, program, parameter, parameters, sendParameter, sendParameters;
 
+non terminal Object function, functions, program, parameter, parameters, sendParameter, sendParameters, expression, 
+                    expressions, statement, statements, if_struct, if_else_struct, while_struct,while_else_struct, for_range_struct, decl, assignment,
+                    decl_and_assignment, readData, printData, callFunction, case_struct, default_struct, switch_struct,
+                    aritmeticExpression, aritmeticExpressions, relationalExpression, logicalExpression, logicalExpressions,
+                    literal, aritmeticOp, relationalOp, logicalOp;
 
 //PRECEDENCIA
 precedence left PLUS;
@@ -31,21 +35,106 @@ precedence left TIMES;
 start with program;
 
 
-type ::= INTEGERTYPE | FLOATTYPE | BOOLEANTYPE | CHARTYPE | STRINGTYPE | VOIDTYPE;
+type ::= INTEGERTYPE | FLOATTYPE | BOOLEANTYPE | CHARTYPE | STRINGTYPE;
+literal ::= INTEGER | FLOAT | CHAR | STRING | BOOLEAN;
+aritmeticOp ::= PLUS | MINUS | TIMES | DIVIDE | MODULE | POWER; 
+relationalOp ::= EQUALS | DIFFERENT | GREATER | LESS | GREATEREQUAL | LESSEQUAL;
+logicalOp ::= AND | OR;
 
-//parameter::= type SEPARATOR IDENTIFIER;
-//parameters ::= type SEPARATOR IDENTIFIER;
-//parameters ::= parameters COMMA parameter;
-//parameters ::= parameter;
+/** EXPRESSIONS **/
 
-sendParameter ::= IDENTIFIER | INTEGER | FLOAT | CHAR | STRING | TRUE | FALSE;
+aritmeticExpression ::= literal | IDENTIFIER | callFunction;
+aritmeticExpression ::= literal | IDENTIFIER | callFunction aritmeticOp literal | IDENTIFIER | callFunction;
+aritmeticExpression ::= IDENTIFIER  INCREMENT | DECREMENT;
+aritmeticExpressions ::= aritmeticExpression;
+aritmeticExpressions ::= aritmeticExpressions aritmeticOp aritmeticExpression;
+aritmeticExpressions ::= LPAREN aritmeticExpressions RPAREN;
+aritmeticExpressions ::= MINUS aritmeticExpression;
+
+relationalExpression ::= literal | IDENTIFIER | callFunction;
+relationalExpression ::= literal | IDENTIFIER | callFunction relationalOp literal | IDENTIFIER | callFunction;
+relationalExpression ::= LPAREN relationalExpression RPAREN;
+relationalExpression ::= NOT relationalExpression;
+
+logicalExpression ::= relationalExpression;
+logicalExpression ::= relationalExpression logicalOp relationalExpression;
+logicalExpressions ::= logicalExpression;
+logicalExpressions ::= logicalExpressions logicalOp logicalExpression;
+logicalExpressions ::= LPAREN logicalExpressions RPAREN;
+logicalExpressions ::= NOT logicalExpressions;
+
+expression ::= aritmeticExpressions | relationalExpression | logicalExpressions;
+expressions ::= expression;
+expressions ::= expressions logicalOp expression;
+expressions ::= LPAREN expressions RPAREN;
+
+
+/** STATEMENTS **/
+
+decl ::= type SEPARATOR IDENTIFIER ENDLINE;
+
+assignment ::= IDENTIFIER ASSIGN literal | IDENTIFIER | expressions ENDLINE;
+
+decl_and_assignment ::= type SEPARATOR IDENTIFIER ASSIGN literal | IDENTIFIER | expressions  ENDLINE;
+
+readData ::= READ SEPARATOR READSYMBOL IDENTIFIER ENDLINE;
+
+printData ::= PRINT SEPARATOR PRINTSYMBOL IDENTIFIER ENDLINE;
+
+callFunction ::= IDENTIFIER LPAREN sendParameters RPAREN ENDLINE;
+
+if_struct ::= IF LPAREN logicalExpressions RPAREN BLOCKSTART statements BLOCKEND;
+
+if_else_struct ::= if_struct ELSE BLOCKSTART statements BLOCKEND;
+
+while_struct ::= WHILE LPAREN logicalExpressions RPAREN BLOCKSTART statements BLOCKEND;
+
+while_else_struct ::= while_struct ELSE BLOCKSTART statements BLOCKEND;
+
+for_range_struct ::= FOR SEPARATOR IDENTIFIER SEPARATOR IN SEPARATOR RANGE LPAREN INTEGER COMMA
+                     INTEGER COMMA INTEGER RPAREN BLOCKSTART statements BLOCKEND;
+
+for_range_struct ::= FOR SEPARATOR IDENTIFIER SEPARATOR IN SEPARATOR RANGE LPAREN INTEGER COMMA
+                     INTEGER RPAREN BLOCKSTART statements BLOCKEND;
+
+for_range_struct ::= FOR SEPARATOR IDENTIFIER SEPARATOR IN SEPARATOR RANGE LPAREN INTEGER RPAREN BLOCKSTART statements BLOCKEND;
+
+             
+
+statement ::=   decl | assignment | decl_and_assignment | readData | printData |
+                callFunction | if_struct | while_struct | for_range_struct;
+
+statements ::= statement;
+statements ::= statements statement;
+
+
+/** PARAMETERS **/
+
+parameter ::= type SEPARATOR IDENTIFIER;
+parameters ::= parameter;
+parameters ::= parameters COMMA parameter;
+
+sendParameter ::= IDENTIFIER | literal | callFunction;
 sendParameters ::= sendParameter;
 sendParameters ::= sendParameters COMMA sendParameter;
 
-function ::= type SEPARATOR IDENTIFIER LPAREN sendParameters RPAREN BLOCKSTART BLOCKEND;
 
-functions ::= functions function;
+/** FUNCTIONS **/
+
+function ::= type SEPARATOR IDENTIFIER LPAREN parameters RPAREN BLOCKSTART statements BLOCKEND;
+
 functions ::= function;
+functions ::= functions function;
 
 program ::= functions;
+
+
+
+
+
+
+
+
+
+
 

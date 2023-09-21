@@ -12,7 +12,7 @@ letter = [a-zA-Z]
 
 Integer = 0|[1-9][0-9]*
 Float = {Integer}(\.[0-9]*)?
-Boolean = T | F
+Boolean = true | false
 String = \"(\\.|[^\"])*\"
 Char = '[^']'
 Identifier = {letter}({letter}|[0-9])*
@@ -41,6 +41,9 @@ Identifier = {letter}({letter}|[0-9])*
 ")" { return symbol(ParserSym.RPAREN, yytext()); }
 "/" { return symbol(ParserSym.DIVIDE, yytext()); }
 "%" { return symbol(ParserSym.MODULE, yytext()); }
+"^" { return symbol(ParserSym.POWER, yytext()); }
+"++" { return symbol(ParserSym.INCREMENT, yytext()); }
+"--" { return symbol(ParserSym.DECREMENT, yytext()); }
 "=" { return symbol(ParserSym.ASSIGN, yytext()); }
 ";" { return symbol(ParserSym.ENDLINE, yytext()); }
 "==" { return symbol(ParserSym.EQUALS, yytext()); }
@@ -77,8 +80,7 @@ Identifier = {letter}({letter}|[0-9])*
 "bool" { return symbol(ParserSym.BOOLEANTYPE, yytext()); }
 "char" { return symbol(ParserSym.CHARTYPE, yytext()); }
 "string" { return symbol(ParserSym.STRINGTYPE, yytext()); }
-"true" { return symbol(ParserSym.TRUE, yytext()); }
-"false" { return symbol(ParserSym.FALSE, yytext()); }
+
 {Integer}+ { return symbol(ParserSym.INTEGER, Integer.valueOf(yytext())); }
 {Float}+ { return symbol(ParserSym.FLOAT, Float.valueOf(yytext())); }
 {Boolean}+ { return symbol(ParserSym.BOOLEAN, Boolean.valueOf(yytext())); }
