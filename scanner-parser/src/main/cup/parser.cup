@@ -22,67 +22,62 @@ terminal String STRING;
 /** NO TERMINALES **/
 non terminal type;
 
-non terminal Object function, functions, program, parameter, parameters, sendParameter, sendParameters, expression, 
+non terminal  function, functions, program, parameter, parameters, sendParameter, sendParameters, expression,
                     expressions, statement, statements, if_struct, if_else_struct, while_struct,while_else_struct, for_range_struct, decl, assignment,
                     decl_and_assignment, readData, printData, callFunction, case_statement, case_statements, default_statement, switch_struct,
                     aritmeticExpression, aritmeticExpressions, relationalExpression, logicalExpression, logicalExpressions,
-                    literal, aritmeticOp, relationalOp, logicalOp;
+                    literal, aritmeticOp, relationalOp, logicalOp, operand, primaryExpression, unaryExpression, binaryExpression, groupedExpression;
+
 
 //PRECEDENCIA
-precedence left PLUS;
-precedence left TIMES;
-
+precedence left OR;
+precedence left AND;
+precedence left EQUALS, DIFFERENT, GREATER, LESS, GREATEREQUAL, LESSEQUAL;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE, MODULE, POWER;
+precedence right NOT;
 start with program;
 
 
 type ::= INTEGERTYPE | FLOATTYPE | BOOLEANTYPE | CHARTYPE | STRINGTYPE;
 literal ::= INTEGER | FLOAT | CHAR | STRING | BOOLEAN;
-aritmeticOp ::= PLUS | MINUS | TIMES | DIVIDE | MODULE | POWER; 
+aritmeticOp ::= PLUS | MINUS | TIMES | DIVIDE | MODULE | POWER;
+operand ::= literal | IDENTIFIER | callFunction;
 relationalOp ::= EQUALS | DIFFERENT | GREATER | LESS | GREATEREQUAL | LESSEQUAL;
 logicalOp ::= AND | OR;
 
 /** EXPRESSIONS **/
 
-aritmeticExpression ::= literal | IDENTIFIER | callFunction;
+
+aritmeticExpression ::= operand | MINUS operand | IDENTIFIER INCREMENT | IDENTIFIER DECREMENT;  //recordar MINUS solo a operando/literal o a toda la expresion
 aritmeticExpression ::= aritmeticExpression aritmeticOp aritmeticExpression;
-aritmeticExpression ::= IDENTIFIER  INCREMENT | DECREMENT;
-aritmeticExpressions ::= aritmeticExpression;
-aritmeticExpressions ::= aritmeticExpressions aritmeticOp aritmeticExpression;
-aritmeticExpressions ::= LPAREN aritmeticExpressions RPAREN;
-aritmeticExpressions ::= MINUS aritmeticExpressions;
+aritmeticExpression ::= LPAREN aritmeticExpression RPAREN;
 
-relationalExpression ::= literal | IDENTIFIER | callFunction;
-relationalExpression ::= relationalExpression relationalOp relationalExpression;
-relationalExpression ::= LPAREN relationalExpression RPAREN;
-relationalExpression ::= NOT relationalExpression;
+relationalExpression ::= aritmeticExpression relationalOp aritmeticExpression;
 
-logicalExpression ::= relationalExpression;
-logicalExpression ::= relationalExpression logicalOp relationalExpression;
-logicalExpressions ::= logicalExpression;
-logicalExpressions ::= logicalExpressions logicalOp logicalExpression;
-logicalExpressions ::= LPAREN logicalExpressions RPAREN;
-logicalExpressions ::= NOT logicalExpressions;
+logicalExpression ::= relationalExpression;//| operand;
+logicalExpression ::= logicalExpression logicalOp logicalExpression;
+logicalExpression ::= LPAREN logicalExpression RPAREN;
+logicalExpression ::= NOT logicalExpression;
 
-expression ::= aritmeticExpressions | logicalExpressions;
-expressions ::= expression;
-expressions ::= expressions logicalOp expression;
-expressions ::= LPAREN expressions RPAREN;
 
+expression ::= aritmeticExpression | logicalExpression;
 
 /** STATEMENTS **/
 
 decl ::= type SEPARATOR IDENTIFIER ENDLINE;
 
-assignment ::= IDENTIFIER ASSIGN expressions ENDLINE;
+assignment ::= IDENTIFIER ASSIGN expression ENDLINE;
 
-decl_and_assignment ::= type SEPARATOR IDENTIFIER ASSIGN  expressions  ENDLINE;
+decl_and_assignment ::= type SEPARATOR IDENTIFIER ASSIGN  expression ENDLINE;
 
 readData ::= READ SEPARATOR READSYMBOL IDENTIFIER ENDLINE;
 
 printData ::= PRINT SEPARATOR PRINTSYMBOL IDENTIFIER ENDLINE;
 
-callFunction ::= IDENTIFIER LPAREN sendParameters RPAREN ENDLINE;
+callFunction ::= IDENTIFIER LPAREN expression  RPAREN ENDLINE;
 
+/*
 if_struct ::= IF LPAREN logicalExpressions RPAREN BLOCKSTART statements BLOCKEND;
 
 if_else_struct ::= if_struct ELSE BLOCKSTART statements BLOCKEND;
@@ -107,10 +102,10 @@ case_statements ::= case_statement | case_statements case_statement;
 default_statement ::= DEFAULT DOTS statements;
 
 switch_struct ::= SWITCH LPAREN statements | IDENTIFIER| literal RPAREN BLOCKSTART case_statements default_statement BLOCKEND;
-
+*/
 
 statement ::=   decl | assignment | decl_and_assignment | readData | printData |
-                callFunction | if_struct | if_else_struct| while_struct | while_else_struct | for_range_struct | switch_struct;
+                callFunction ;//| if_struct | if_else_struct| while_struct | while_else_struct | for_range_struct | switch_struct;
 
 statements ::= statement;
 statements ::= statements statement;
@@ -122,14 +117,11 @@ parameter ::= type SEPARATOR IDENTIFIER;
 parameters ::= parameter;
 parameters ::= parameters COMMA parameter;
 
-sendParameter ::= IDENTIFIER | literal | callFunction;
-sendParameters ::= sendParameter;
-sendParameters ::= sendParameters COMMA sendParameter;
-
 
 /** FUNCTIONS **/
 
-function ::= type SEPARATOR IDENTIFIER LPAREN parameters RPAREN BLOCKSTART statements BLOCKEND;
+function ::= type SEPARATOR IDENTIFIER LPAREN parameters RPAREN BLOCKSTART statements BLOCKEND
+           | type SEPARATOR IDENTIFIER LPAREN  RPAREN BLOCKSTART statements BLOCKEND;
 
 functions ::= function;
 functions ::= functions function;
