@@ -1,32 +1,46 @@
 package com.compiladores;
 
 import java_cup.runtime.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 class Parser;
 
-/** TERMINALES **/
+parser code  {:
 
+    Map<String, ArrayList<String>> tablasDeSimbolos = new Hashtable<>();
+    String currentHash = "";
+
+    public void imprimirTablaSimbolos(){
+        System.out.println("##### TABLA DE SIMBOLOS #####");
+        for (Map.Entry<String, ArrayList<String>> entry : tablasDeSimbolos.entrySet()) {
+            System.out.println("##### "+entry.getKey()+" #####");
+            for(String s : entry.getValue()){
+                System.out.println(s);
+            }
+        }
+    }
+
+:};
+
+
+/** TERMINALES **/
 terminal PLUS, MINUS, TIMES, LPAREN, RPAREN, DIVIDE, MODULE, POWER, INCREMENT, DECREMENT, ASSIGN, ENDLINE, EQUALS, DIFFERENT, GREATER,
  LESS, GREATEREQUAL, LESSEQUAL, AND, OR, NOT, BLOCKSTART, BLOCKEND, COMMA, SEPARATOR, IF, ELSE, IDENTIFIER,
  RETURN, BREAK, FOR, IN, RANGE, WHILE, SWITCH, CASE, DOTS, DEFAULT, READ, READSYMBOL, PRINT, PRINTSYMBOL,
- LINEALCOMMENT, STARTCOMMENT, ENDCOMMENT, TEXT, INTEGERTYPE, FLOATTYPE, BOOLEANTYPE, CHARTYPE, STRINGTYPE,
- VOIDTYPE, BOOLEAN,VOID;
+ LINEALCOMMENT, STARTCOMMENT, ENDCOMMENT, TEXT, INTEGERTYPE, FLOATTYPE, BOOLEANTYPE, CHARTYPE, STRINGTYPE, BOOLEAN, INTEGER, FLOAT, CHAR, STRING;
 
-
-terminal Interger INTEGER;
-terminal Float FLOAT;
-terminal Character CHAR;
-terminal String STRING;
 
 
 /** NO TERMINALES **/
 non terminal type;
 
-non terminal  function, functions, program, parameter, parameters, sendParameter, sendParameters, expression,
-                    expressions, statement, statements, if_struct, if_else_struct, while_struct,while_else_struct, for_range_struct, decl, assignment,
-                    decl_and_assignment, readData, printData, callFunction, case_statement, case_statements, default_statement, switch_struct,
-                    aritmeticExpression, aritmeticExpressions, relationalExpression, logicalExpression, logicalExpressions,
-                    literal, aritmeticOp, relationalOp, logicalOp, operand, primaryExpression, unaryExpression, binaryExpression, groupedExpression;
+non terminal  function, functions, program, parameter, parameters, expression, statement, statements, if_struct, if_else_struct,
+              while_struct,while_else_struct, for_range_struct, decl, assignment, decl_and_assignment, readData, printData, callFunction,
+              case_statement, case_statements, default_statement, switch_struct,aritmeticExpression, relationalExpression,
+              logicalExpression,literal, aritmeticOp, relationalOp, logicalOp, operand, functionIdentifier,varIdentifier;
 
 
 //PRECEDENCIA
@@ -39,7 +53,12 @@ precedence right NOT;
 start with program;
 
 
-type ::= INTEGERTYPE | FLOATTYPE | BOOLEANTYPE | CHARTYPE | STRINGTYPE;
+type ::= INTEGERTYPE {:RESULT = "int"; :}
+       | FLOATTYPE {:RESULT = "float"; :}
+       | BOOLEANTYPE {:RESULT = "boolean"; :}
+       | CHARTYPE {:RESULT = "char"; :}
+       | STRINGTYPE {:RESULT = "string"; :};
+
 literal ::= INTEGER | FLOAT | CHAR | STRING | BOOLEAN;
 aritmeticOp ::= PLUS | MINUS | TIMES | DIVIDE | MODULE | POWER;
 operand ::= literal | IDENTIFIER | callFunction;
@@ -49,7 +68,13 @@ logicalOp ::= AND | OR;
 /** EXPRESSIONS **/
 
 
-aritmeticExpression ::= operand | MINUS operand | IDENTIFIER INCREMENT | IDENTIFIER DECREMENT;  //recordar MINUS solo a operando/literal o a toda la expresion
+//recordar MINUS solo a operando/literal o a toda la expresion
+aritmeticExpression ::= operand:n {: RESULT = n; :}
+                      | MINUS operand:n {: RESULT = "-"+n; :}
+                      | IDENTIFIER:id INCREMENT {: RESULT = id+"++"; :}
+                      | IDENTIFIER:id DECREMENT {:RESULT = id+"--"; :};
+
+
 aritmeticExpression ::= aritmeticExpression aritmeticOp aritmeticExpression;
 aritmeticExpression ::= LPAREN aritmeticExpression RPAREN;
 
@@ -63,13 +88,46 @@ logicalExpression ::= NOT logicalExpression;
 
 expression ::= aritmeticExpression | logicalExpression;
 
+
+/** CONTROL STRUCTURES **/
+
+if_struct ::= IF LPAREN logicalExpression RPAREN BLOCKSTART statements BLOCKEND;
+
+if_else_struct ::= if_struct ELSE BLOCKSTART statements BLOCKEND;
+
+while_struct ::= WHILE LPAREN logicalExpression RPAREN BLOCKSTART statements BLOCKEND;
+
+while_else_struct ::= while_struct ELSE BLOCKSTART statements BLOCKEND;
+
+for_range_struct ::= FOR SEPARATOR IDENTIFIER SEPARATOR IN SEPARATOR RANGE LPAREN INTEGER COMMA
+                     INTEGER COMMA INTEGER RPAREN BLOCKSTART statements BLOCKEND;
+for_range_struct ::= FOR SEPARATOR IDENTIFIER SEPARATOR IN SEPARATOR RANGE LPAREN INTEGER COMMA
+                     INTEGER RPAREN BLOCKSTART statements BLOCKEND;
+for_range_struct ::= FOR SEPARATOR IDENTIFIER SEPARATOR IN SEPARATOR RANGE LPAREN INTEGER RPAREN BLOCKSTART statements BLOCKEND;
+
+default_statement ::= DEFAULT DOTS statements;
+default_statement ::= DEFAULT DOTS statements BREAK ENDLINE;
+
+case_statement ::= CASE SEPARATOR literal DOTS statements;
+case_statement ::= CASE SEPARATOR literal DOTS statements BREAK ENDLINE; //Break como statement o al final?
+
+case_statements ::= case_statement;
+case_statements ::= case_statements case_statement;
+
+switch_struct ::= SWITCH LPAREN expression RPAREN BLOCKSTART case_statements BLOCKEND;
+switch_struct ::= SWITCH LPAREN expression RPAREN BLOCKSTART case_statements default_statement BLOCKEND;
+switch_struct ::= SWITCH LPAREN expression RPAREN BLOCKSTART default_statement BLOCKEND;
+
+
 /** STATEMENTS **/
 
-decl ::= type SEPARATOR IDENTIFIER ENDLINE;
+varIdentifier ::= type:t SEPARATOR IDENTIFIER:idVar {:tablasDeSimbolos.get(currentHash).add(idVar.toString()+": "+t.toString()); :};
+
+decl ::= varIdentifier ENDLINE;
 
 assignment ::= IDENTIFIER ASSIGN expression ENDLINE;
 
-decl_and_assignment ::= type SEPARATOR IDENTIFIER ASSIGN  expression ENDLINE;
+decl_and_assignment ::= varIdentifier ASSIGN  expression ENDLINE;
 
 readData ::= READ SEPARATOR READSYMBOL IDENTIFIER ENDLINE;
 
@@ -77,35 +135,8 @@ printData ::= PRINT SEPARATOR PRINTSYMBOL IDENTIFIER ENDLINE;
 
 callFunction ::= IDENTIFIER LPAREN expression  RPAREN ENDLINE;
 
-/*
-if_struct ::= IF LPAREN logicalExpressions RPAREN BLOCKSTART statements BLOCKEND;
-
-if_else_struct ::= if_struct ELSE BLOCKSTART statements BLOCKEND;
-
-while_struct ::= WHILE LPAREN logicalExpressions RPAREN BLOCKSTART statements BLOCKEND;
-
-while_else_struct ::= while_struct ELSE BLOCKSTART statements BLOCKEND;
-
-for_range_struct ::= FOR SEPARATOR IDENTIFIER SEPARATOR IN SEPARATOR RANGE LPAREN INTEGER COMMA
-                     INTEGER COMMA INTEGER RPAREN BLOCKSTART statements BLOCKEND;
-
-for_range_struct ::= FOR SEPARATOR IDENTIFIER SEPARATOR IN SEPARATOR RANGE LPAREN INTEGER COMMA
-                     INTEGER RPAREN BLOCKSTART statements BLOCKEND;
-
-for_range_struct ::= FOR SEPARATOR IDENTIFIER SEPARATOR IN SEPARATOR RANGE LPAREN INTEGER RPAREN BLOCKSTART statements BLOCKEND;
-
-
-case_statement ::= CASE literal DOTS statements;
-
-case_statements ::= case_statement | case_statements case_statement;
-
-default_statement ::= DEFAULT DOTS statements;
-
-switch_struct ::= SWITCH LPAREN statements | IDENTIFIER| literal RPAREN BLOCKSTART case_statements default_statement BLOCKEND;
-*/
-
-statement ::=   decl | assignment | decl_and_assignment | readData | printData |
-                callFunction ;//| if_struct | if_else_struct| while_struct | while_else_struct | for_range_struct | switch_struct;
+statement ::=   decl | assignment | decl_and_assignment | readData | printData | RETURN |
+                callFunction | if_struct | if_else_struct| while_struct | while_else_struct | for_range_struct | switch_struct;
 
 statements ::= statement;
 statements ::= statements statement;
@@ -120,13 +151,25 @@ parameters ::= parameters COMMA parameter;
 
 /** FUNCTIONS **/
 
-function ::= type SEPARATOR IDENTIFIER LPAREN parameters RPAREN BLOCKSTART statements BLOCKEND
-           | type SEPARATOR IDENTIFIER LPAREN  RPAREN BLOCKSTART statements BLOCKEND;
+functionIdentifier ::= type:t SEPARATOR IDENTIFIER :idFunc {:
+                                                            String tipoTabla = "main";
+                                                            if (idFunc.toString().equals("main"))
+                                                                tipoTabla = "tipo: main: "+t.toString();
+                                                            else
+                                                                tipoTabla = "tipo: funcion: "+t.toString();
+                                                            ArrayList<String> tabla = new ArrayList<>();
+                                                            currentHash = idFunc.toString();
+                                                            tabla.add(tipoTabla);
+                                                            tablasDeSimbolos.put(currentHash, tabla);
+                                                        :};
+
+function ::= functionIdentifier LPAREN parameters RPAREN BLOCKSTART statements BLOCKEND
+           | functionIdentifier LPAREN  RPAREN BLOCKSTART statements BLOCKEND;
 
 functions ::= function;
 functions ::= functions function;
 
-program ::= functions;
+program ::= functions {: imprimirTablaSimbolos(); :};
 
 
 
