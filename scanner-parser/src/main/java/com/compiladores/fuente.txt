@@ -1,0 +1,78 @@
+
+//Comentario de prueba 1
+
+int#main() {
+    int#x;
+    int#y;
+
+    x = 10;
+    y = 20;
+
+    if (x > 5 && y < 30) {
+        x = x + 1;
+    } else {
+        y = y - 1;
+    }
+
+    while (x < 15 || !(y > 10)) {
+        if (x < 10) {
+            x = x + 1;
+        } else {
+            y = y - 1;
+        }
+    }
+
+   //Comentario de Prueba 2
+
+
+
+    for#i#in#range(0, 3) {
+        switch (i) {
+            case#0:
+                x = x + 2;
+                break;
+            case#1:
+                y = y * 3;
+                break;
+            default:
+                x = x - 1;
+        }
+    }
+    int#result = addNumbers(5, 7) +4*2^(3/(7+4));
+    return#0;
+}
+
+int#addNumbers(int#a, int#b) {
+    return#a + b;
+
+    /* Comenario de prueba 3
+
+
+    */
+}
+
+/* Comentario de prueba 4
+
+*/
+
+string#probarReadAndPrint() {
+    int#x;
+    int#var;
+    read>> x;
+    if (x > 5) {
+        print<<"Es mayor a 5";
+    } else {
+        print<<"Es menor a 5";
+    }
+    string#s;
+    s = "Hola mundo";
+    print<< s;
+    print<< 2+2-2+var--*(2/3)^-5;
+
+    return#s;
+
+}
+
+
+
+

@@ -8,16 +8,6 @@ import java_cup.runtime.*;
 %cup
 
 
-letter = [a-zA-Z]
-
-Integer = 0|[1-9][0-9]*
-Float = {Integer}(\.[0-9]*)?
-Boolean = true | false
-String = \"(\\.|[^\"])*\"
-Char = '[^']'
-Identifier = {letter}({letter}|[0-9])*
-
-
 %{
     StringBuffer string = new StringBuffer();
 
@@ -29,76 +19,85 @@ Identifier = {letter}({letter}|[0-9])*
     }
 %}
 
-%eofval{
-    return symbol(ParserSym.EOF);
-%eofval}
+
+letter = [a-zA-Z]
+Integer = 0|[1-9][0-9]*
+Float = {Integer}(\.[0-9]*)?
+Boolean = true | false
+String = \"(\\.|[^\"])*\"
+Char = '[^']'
+Identifier = {letter}({letter}|[0-9])*
+
+
+LineTerminator = \r|\n|\r\n
+InputCharacter = [^\r\n]
+WhiteSpace = {LineTerminator} | [ \t\f]
+
+/* comments */
+Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
+TraditionalComment = "/*" [^*] ~"*/" | "/*" "*"+ "/"
+EndOfLineComment = "//" {InputCharacter}* {LineTerminator}?
+DocumentationComment = "/**" {CommentContent} "*"+ "/"
+CommentContent = ( [^*] | \*+ [^/*] )*
+
 
 %%
-"+" { return symbol(ParserSym.PLUS, yytext()); }
-"-" { return symbol(ParserSym.MINUS, yytext()); }
-"*" { return symbol(ParserSym.TIMES, yytext()); }
-"/" { return symbol(ParserSym.DIVIDE, yytext()); }
-"%" { return symbol(ParserSym.MODULE, yytext()); }
-"^" { return symbol(ParserSym.POWER, yytext()); }
-"(" { return symbol(ParserSym.LPAREN, yytext()); }
-")" { return symbol(ParserSym.RPAREN, yytext()); }
-"++" { return symbol(ParserSym.INCREMENT, yytext()); }
-"--" { return symbol(ParserSym.DECREMENT, yytext()); }
-"=" { return symbol(ParserSym.ASSIGN, yytext()); }
-";" { return symbol(ParserSym.ENDLINE, yytext()); }
-"==" { return symbol(ParserSym.EQUALS, yytext()); }
-"!=" { return symbol(ParserSym.DIFFERENT, yytext()); }
-">" { return symbol(ParserSym.GREATER, yytext()); }
-"<" { return symbol(ParserSym.LESS, yytext()); }
-">=" { return symbol(ParserSym.GREATEREQUAL, yytext()); }
-"<=" { return symbol(ParserSym.LESSEQUAL, yytext()); }
-"&" { return symbol(ParserSym.AND, yytext()); }
-"|" { return symbol(ParserSym.OR, yytext()); }
-"!" { return symbol(ParserSym.NOT, yytext()); }
-"{" { return symbol(ParserSym.BLOCKSTART, yytext()); }
-"}" { return symbol(ParserSym.BLOCKEND, yytext()); }
-"," { return symbol(ParserSym.COMMA, yytext()); }
-"#" { return symbol(ParserSym.SEPARATOR, yytext()); }
-"if" { return symbol(ParserSym.IF, yytext()); }
-"else" { return symbol(ParserSym.ELSE, yytext()); }
-"return" { return symbol(ParserSym.RETURN, yytext()); }
-"break" { return symbol(ParserSym.BREAK, yytext()); }
-"for" { return symbol(ParserSym.FOR, yytext()); }
-"in" { return symbol(ParserSym.IN, yytext()); }
-"range" { return symbol(ParserSym.RANGE, yytext()); }
-"while" { return symbol(ParserSym.WHILE, yytext()); }
-"switch"  { return symbol(ParserSym.SWITCH, yytext()); }
-"case" { return symbol(ParserSym.CASE, yytext()); }
-":" { return symbol(ParserSym.DOTS, yytext()); }
-"default" { return symbol(ParserSym.DEFAULT, yytext()); }
-"read" { return symbol(ParserSym.READ, yytext()); }
-">>" { return symbol(ParserSym.READSYMBOL, yytext()); }
-"print" { return symbol(ParserSym.PRINT, yytext()); }
-"<<" { return symbol(ParserSym.PRINTSYMBOL, yytext()); }
-"int" { return symbol(ParserSym.INTEGERTYPE, yytext()); }
-"float" { return symbol(ParserSym.FLOATTYPE, yytext()); }
-"bool" { return symbol(ParserSym.BOOLEANTYPE, yytext()); }
-"char" { return symbol(ParserSym.CHARTYPE, yytext()); }
-"string" { return symbol(ParserSym.STRINGTYPE, yytext()); }
+"+" { return symbol(sym.PLUS, yytext()); }
+"-" { return symbol(sym.MINUS, yytext()); }
+"*" { return symbol(sym.TIMES, yytext()); }
+"/" { return symbol(sym.DIVIDE, yytext()); }
+"%" { return symbol(sym.MODULE, yytext()); }
+"^" { return symbol(sym.POWER, yytext()); }
+"(" { return symbol(sym.LPAREN, yytext()); }
+")" { return symbol(sym.RPAREN, yytext()); }
+"++" { return symbol(sym.INCREMENT, yytext()); }
+"--" { return symbol(sym.DECREMENT, yytext()); }
+"=" { return symbol(sym.ASSIGN, yytext()); }
+";" { return symbol(sym.ENDLINE, yytext()); }
+"==" { return symbol(sym.EQUALS, yytext()); }
+"!=" { return symbol(sym.DIFFERENT, yytext()); }
+">" { return symbol(sym.GREATER, yytext()); }
+"<" { return symbol(sym.LESS, yytext()); }
+">=" { return symbol(sym.GREATEREQUAL, yytext()); }
+"<=" { return symbol(sym.LESSEQUAL, yytext()); }
+"&&" { return symbol(sym.AND, yytext()); }
+"||" { return symbol(sym.OR, yytext()); }
+"!" { return symbol(sym.NOT, yytext()); }
+"{" { return symbol(sym.BLOCKSTART, yytext()); }
+"}" { return symbol(sym.BLOCKEND, yytext()); }
+"," { return symbol(sym.COMMA, yytext()); }
+"#" { return symbol(sym.SEPARATOR, yytext()); }
+"if" { return symbol(sym.IF, yytext()); }
+"else" { return symbol(sym.ELSE, yytext()); }
+"return" { return symbol(sym.RETURN, yytext()); }
+"break" { return symbol(sym.BREAK, yytext()); }
+"for" { return symbol(sym.FOR, yytext()); }
+"in" { return symbol(sym.IN, yytext()); }
+"range" { return symbol(sym.RANGE, yytext()); }
+"while" { return symbol(sym.WHILE, yytext()); }
+"switch"  { return symbol(sym.SWITCH, yytext()); }
+"case" { return symbol(sym.CASE, yytext()); }
+":" { return symbol(sym.DOTS, yytext()); }
+"default" { return symbol(sym.DEFAULT, yytext()); }
+"read" { return symbol(sym.READ, yytext()); }
+">>" { return symbol(sym.READSYMBOL, yytext()); }
+"print" { return symbol(sym.PRINT, yytext()); }
+"<<" { return symbol(sym.PRINTSYMBOL, yytext()); }
+"int" { return symbol(sym.INTEGERTYPE, yytext()); }
+"float" { return symbol(sym.FLOATTYPE, yytext()); }
+"bool" { return symbol(sym.BOOLEANTYPE, yytext()); }
+"char" { return symbol(sym.CHARTYPE, yytext()); }
+"string" { return symbol(sym.STRINGTYPE, yytext()); }
 
-{Integer}+ { return symbol(ParserSym.INTEGER, Integer.valueOf(yytext())); }
-{Float}+ { return symbol(ParserSym.FLOAT, Float.valueOf(yytext())); }
-{Boolean}+ { return symbol(ParserSym.BOOLEAN, Boolean.valueOf(yytext())); }
-{String}+ { return symbol(ParserSym.STRING, yytext()); }
-{Char}+ { return symbol(ParserSym.CHAR, yytext()); }
-{Identifier}+ { return symbol(ParserSym.IDENTIFIER, yytext()); }
+{Integer}+ { return symbol(sym.INTEGER, Integer.valueOf(yytext())); }
+{Float}+ { return symbol(sym.FLOAT, Float.valueOf(yytext())); }
+{Boolean}+ { return symbol(sym.BOOLEAN, Boolean.valueOf(yytext())); }
+{String}+ { return symbol(sym.STRING, yytext()); }
+{Char}+ { return symbol(sym.CHAR, yytext()); }
+{Identifier}+ { return symbol(sym.IDENTIFIER, yytext()); }
 
+{Comment}+ { /* ignore */}
+{WhiteSpace}+ { /* ignore */ }
 
-   /*
-"void" { return symbol(ParserSym.VOIDTYPE, yytext()); }
-"null" { return symbol(ParserSym.NULL, yytext()); }
+//[^] + { return symbol(sym.ERROR_RECOVERY, yytext()); }
 
-"//[^\\n]*" { /* Comentario de línea - No hace nada */}
-"/*[^*]*\\*+([^/*][^*]*\\*+)*/" { /* Comentario de bloque - No hace nada */}
-"\"[^\"\\n]*\"" { return symbol(ParserSym.TEXT, yytext()); }
-
-    */
-    */
-
-
-[^] { throw new Error("Cadena no permitida <" + yytext() + ">"); } //cualquier otro caso

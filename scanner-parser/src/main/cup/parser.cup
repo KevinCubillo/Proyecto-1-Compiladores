@@ -6,41 +6,60 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-class Parser;
-
 parser code  {:
+
+    //Connect to the lexer
+    Lexer lexer;
+
+    @SuppressWarnings("deprecation")
+    public parser(Lexer lexer) {
+        this.lexer = lexer;
+        this.symbolFactory = new DefaultSymbolFactory();
+    }
 
     Map<String, ArrayList<String>> tablasDeSimbolos = new Hashtable<>();
     String currentHash = "";
 
     public void imprimirTablaSimbolos(){
-        System.out.println("##### TABLA DE SIMBOLOS #####");
+        System.out.println("##### TABLAS DE SIMBOLOS #####\n");
         for (Map.Entry<String, ArrayList<String>> entry : tablasDeSimbolos.entrySet()) {
-            System.out.println("##### "+entry.getKey()+" #####");
+            System.out.println("\n##### "+entry.getKey()+" #####");
             for(String s : entry.getValue()){
                 System.out.println(s);
             }
         }
     }
 
+     void yyerror(String mensaje) {
+            System.out.println("Error  capturado: " + mensaje);
+     }
+
 :};
+
+
+//Conect to the lexer
+
+init with {: :};
+scan with {: return lexer.next_token(); :};
+
 
 
 /** TERMINALES **/
 terminal PLUS, MINUS, TIMES, LPAREN, RPAREN, DIVIDE, MODULE, POWER, INCREMENT, DECREMENT, ASSIGN, ENDLINE, EQUALS, DIFFERENT, GREATER,
- LESS, GREATEREQUAL, LESSEQUAL, AND, OR, NOT, BLOCKSTART, BLOCKEND, COMMA, SEPARATOR, IF, ELSE, IDENTIFIER,
- RETURN, BREAK, FOR, IN, RANGE, WHILE, SWITCH, CASE, DOTS, DEFAULT, READ, READSYMBOL, PRINT, PRINTSYMBOL,
- LINEALCOMMENT, STARTCOMMENT, ENDCOMMENT, TEXT, INTEGERTYPE, FLOATTYPE, BOOLEANTYPE, CHARTYPE, STRINGTYPE, BOOLEAN, INTEGER, FLOAT, CHAR, STRING;
+ LESS, GREATEREQUAL, LESSEQUAL, AND, OR, NOT, BLOCKSTART, BLOCKEND, COMMA, SEPARATOR, IF, ELSE, IDENTIFIER, RETURN, BREAK, FOR, IN,
+ RANGE, WHILE, SWITCH, CASE, DOTS, DEFAULT, READ, READSYMBOL, PRINT, PRINTSYMBOL, INTEGERTYPE, FLOATTYPE, BOOLEANTYPE, CHARTYPE,
+ STRINGTYPE, BOOLEAN, INTEGER, FLOAT, CHAR, STRING;
 
+terminal ERROR_RECOVERY;
 
 
 /** NO TERMINALES **/
 non terminal type;
 
-non terminal  function, functions, program, parameter, parameters, expression, statement, statements, if_struct, if_else_struct,
-              while_struct,while_else_struct, for_range_struct, decl, assignment, decl_and_assignment, readData, printData, callFunction,
-              case_statement, case_statements, default_statement, switch_struct,aritmeticExpression, relationalExpression,
-              logicalExpression,literal, aritmeticOp, relationalOp, logicalOp, operand, functionIdentifier,varIdentifier;
+non terminal  function, functions, program, parameter, parameters, expression, statement, statements, if_struct, if_else_struct, while_struct,
+              while_else_struct, for_range_struct, decl, assignment, decl_and_assignment, readData, printData, callFunction, case_statement,
+              case_statements, default_statement, switch_struct,aritmeticExpression, relationalExpression, logicalExpression, literal, aritmeticOp,
+              relationalOp, logicalOp, operand, functionIdentifier,varIdentifier, return_statement, break_statement, callFunction_statement;
 
 
 //PRECEDENCIA
@@ -50,6 +69,7 @@ precedence left EQUALS, DIFFERENT, GREATER, LESS, GREATEREQUAL, LESSEQUAL;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIVIDE, MODULE, POWER;
 precedence right NOT;
+
 start with program;
 
 
@@ -65,8 +85,9 @@ operand ::= literal | IDENTIFIER | callFunction;
 relationalOp ::= EQUALS | DIFFERENT | GREATER | LESS | GREATEREQUAL | LESSEQUAL;
 logicalOp ::= AND | OR;
 
-/** EXPRESSIONS **/
 
+
+/** EXPRESSIONS **/
 
 //recordar MINUS solo a operando/literal o a toda la expresion
 aritmeticExpression ::= operand:n {: RESULT = n; :}
@@ -106,10 +127,8 @@ for_range_struct ::= FOR SEPARATOR IDENTIFIER SEPARATOR IN SEPARATOR RANGE LPARE
 for_range_struct ::= FOR SEPARATOR IDENTIFIER SEPARATOR IN SEPARATOR RANGE LPAREN INTEGER RPAREN BLOCKSTART statements BLOCKEND;
 
 default_statement ::= DEFAULT DOTS statements;
-default_statement ::= DEFAULT DOTS statements BREAK ENDLINE;
 
 case_statement ::= CASE SEPARATOR literal DOTS statements;
-case_statement ::= CASE SEPARATOR literal DOTS statements BREAK ENDLINE; //Break como statement o al final?
 
 case_statements ::= case_statement;
 case_statements ::= case_statements case_statement;
@@ -129,14 +148,22 @@ assignment ::= IDENTIFIER ASSIGN expression ENDLINE;
 
 decl_and_assignment ::= varIdentifier ASSIGN  expression ENDLINE;
 
-readData ::= READ SEPARATOR READSYMBOL IDENTIFIER ENDLINE;
+readData ::= READ READSYMBOL IDENTIFIER ENDLINE;
 
-printData ::= PRINT SEPARATOR PRINTSYMBOL IDENTIFIER ENDLINE;
+printData ::= PRINT PRINTSYMBOL expression ENDLINE;
 
-callFunction ::= IDENTIFIER LPAREN expression  RPAREN ENDLINE;
+callFunction ::= IDENTIFIER LPAREN expression  RPAREN;
+callFunction ::= IDENTIFIER LPAREN expression COMMA expression RPAREN;
+callFunction_statement ::= callFunction ENDLINE;
 
-statement ::=   decl | assignment | decl_and_assignment | readData | printData | RETURN |
-                callFunction | if_struct | if_else_struct| while_struct | while_else_struct | for_range_struct | switch_struct;
+return_statement ::= RETURN SEPARATOR expression ENDLINE;
+return_statement ::= RETURN ENDLINE;
+
+break_statement ::= BREAK ENDLINE;
+
+statement ::=   decl | assignment | decl_and_assignment | readData | printData | return_statement | break_statement |
+                callFunction_statement | if_struct | if_else_struct| while_struct | while_else_struct | for_range_struct
+                | switch_struct;
 
 statements ::= statement;
 statements ::= statements statement;
@@ -170,6 +197,19 @@ functions ::= function;
 functions ::= functions function;
 
 program ::= functions {: imprimirTablaSimbolos(); :};
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
