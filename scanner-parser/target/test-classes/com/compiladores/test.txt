@@ -1,0 +1,1 @@
+int#getEdad(vaso){}string#getNombre(2.5){}
